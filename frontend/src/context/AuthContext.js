@@ -51,8 +51,10 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const success = await authService.login(email, password);
+      console.log('Login success:', success);
       if (success) {
         const userData = await authService.getCurrentUser();
+        console.log('User data:', userData);
         setUser(userData);
         return true;
       }
@@ -85,7 +87,7 @@ export const AuthProvider = ({ children }) => {
     error,
     login,
     logout,
-    isAuthenticated: !!user,
+    isAuthenticated: authService.isAuthenticated(), // Use direct check from authService
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

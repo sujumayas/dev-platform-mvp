@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/Loading';
@@ -12,9 +12,19 @@ const Login = () => {
   const { login, isAuthenticated, loading, error } = useAuth();
   const navigate = useNavigate();
 
-  // If already authenticated, redirect to home
+  // Check authentication status on mount and when auth state changes
+  useEffect(() => {
+    console.log('Login page: isAuthenticated =', isAuthenticated);
+    
+    if (isAuthenticated && !loading) {
+      console.log('Already authenticated, navigating to home');
+      navigate('/');
+    }
+  }, [isAuthenticated, loading, navigate]);
+  
+  // If already authenticated, show loading while we prepare to redirect
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Loading fullScreen={true} />;
   }
 
   const handleSubmit = async (e) => {
@@ -32,8 +42,12 @@ const Login = () => {
     }
 
     try {
+      console.log('Attempting login...');
       const success = await login(email, password);
+      console.log('Login result:', success);
+      
       if (success) {
+        console.log('Login successful, navigating to home');
         navigate('/');
       } else {
         setNotification({ 

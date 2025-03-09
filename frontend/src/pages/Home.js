@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import UserMenu from '../components/UserMenu';
+import Loading from '../components/Loading';
 
 const Home = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    console.log('Home component mounted, user:', user);
+  }, [user]);
+
+  if (loading) {
+    return <Loading fullScreen={true} />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">

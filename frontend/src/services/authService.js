@@ -8,11 +8,14 @@ const login = async (email, password) => {
     params.append('username', email); // Backend uses username for email
     params.append('password', password);
 
-    const response = await api.post('/auth/login', params, {
+    // Use application/x-www-form-urlencoded content type with URLSearchParams
+    const response = await api.post('/auth/login', params.toString(), {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
+    
+    console.log('Login response:', response.data);
     
     if (response.data.access_token) {
       localStorage.setItem('token', response.data.access_token);
@@ -42,17 +45,23 @@ const logout = async () => {
 // Get current user profile
 const getCurrentUser = async () => {
   try {
+    console.log('Getting current user...');
+    console.log('Token:', localStorage.getItem('token'));
+    
     const response = await api.get('/users/profile');
+    console.log('User profile response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Get user error:', error);
+    console.error('Get user error:', error.response || error);
     return null;
   }
 };
 
 // Check if user is authenticated
 const isAuthenticated = () => {
-  return !!localStorage.getItem('token');
+  const token = localStorage.getItem('token');
+  console.log('Checking if authenticated, token:', token ? 'exists' : 'missing');
+  return Boolean(token);
 };
 
 const authService = {
