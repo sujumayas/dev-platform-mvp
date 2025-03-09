@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import Stories from './pages/Stories';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           {/* Protected routes that require authentication */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
+            <Route path="/stories" element={<Stories />} />
             {/* Add more protected routes here */}
           </Route>
           

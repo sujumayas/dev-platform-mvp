@@ -5,11 +5,30 @@ from uuid import UUID
 
 from app.models.user_story import UserStory, StoryStatus
 from app.schemas.user_story import UserStoryCreate, UserStoryUpdate
+from app.crud.user import get_user_by_email
 
 
 def create_story(
     db: Session, story_in: UserStoryCreate, created_by: UUID
 ) -> UserStory:
+    # Check if the provided user ID exists, if not use the admin user
+    from app.models.user import User
+    user_exists = db.query(User).filter(User.id == created_by).first()
+    
+    if not user_exists:
+        # Try to get the admin user
+        admin_user = get_user_by_email(db, email="admin@example.com")
+        
+        if admin_user:
+            created_by = admin_user.id
+        else:
+            # If no admin user, try to run the initial data script to create one
+            from app.initial_data import init_db
+            init_db(db)
+            admin_user = get_user_by_email(db, email="admin@example.com")
+            if admin_user:
+                created_by = admin_user.id
+    
     db_story = UserStory(
         title=story_in.title,
         description=story_in.description,
