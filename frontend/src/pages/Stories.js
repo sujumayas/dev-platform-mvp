@@ -373,18 +373,20 @@ const Stories = () => {
         )}
       </div>
       
-      {/* Story Detail Modal */}
+      {/* Story Detail Modal - Full Page */}
       {selectedStory && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-          <div className="relative mx-auto w-full max-w-6xl p-4">
-            <StoryDetail
-              story={selectedStory}
-              onClose={handleCloseDetail}
-              onStatusChange={handleStoryStatusUpdate}
-              onUpdate={handleStoryUpdate}
-              onDelete={handleStoryDelete}
-              onError={(message) => setNotification({ type: 'error', message })}
-            />
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50">
+          <div className="min-h-screen p-4 flex items-start justify-center">
+            <div className="relative w-full max-w-7xl my-8">
+              <StoryDetail
+                story={selectedStory}
+                onClose={handleCloseDetail}
+                onStatusChange={handleStoryStatusUpdate}
+                onUpdate={handleStoryUpdate}
+                onDelete={handleStoryDelete}
+                onError={(message) => setNotification({ type: 'error', message })}
+              />
+            </div>
           </div>
         </div>
       )}

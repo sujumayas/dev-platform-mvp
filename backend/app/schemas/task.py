@@ -1,4 +1,4 @@
-from pydantic import BaseModel, UUID4
+from pydantic import BaseModel, UUID4, Field, validator
 from typing import Optional
 from datetime import datetime
 from enum import Enum
@@ -18,14 +18,39 @@ class TaskBase(BaseModel):
 
 # Properties to receive via API on creation
 class TaskCreate(TaskBase):
-    title: str
-    description: str
+    title: str = Field(..., min_length=1, max_length=100)
+    description: str = Field(..., min_length=1, max_length=500)
     story_id: UUID4
+    
+    @validator('title')
+    def title_must_not_be_empty(cls, v):
+        if not v.strip():
+            raise ValueError('Title cannot be empty')
+        return v
+    
+    @validator('description')
+    def description_must_not_be_empty(cls, v):
+        if not v.strip():
+            raise ValueError('Description cannot be empty')
+        return v
 
 
 # Properties to receive via API on update
 class TaskUpdate(TaskBase):
-    pass
+    title: Optional[str] = Field(None, min_length=1, max_length=100)
+    description: Optional[str] = Field(None, min_length=1, max_length=500)
+    
+    @validator('title')
+    def title_must_not_be_empty(cls, v):
+        if v is not None and not v.strip():
+            raise ValueError('Title cannot be empty')
+        return v
+    
+    @validator('description')
+    def description_must_not_be_empty(cls, v):
+        if v is not None and not v.strip():
+            raise ValueError('Description cannot be empty')
+        return v
 
 
 # Properties for status update

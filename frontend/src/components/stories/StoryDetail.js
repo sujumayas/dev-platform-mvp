@@ -4,6 +4,7 @@ import StatusTransition from './StatusTransition';
 import GherkinDisplay from './GherkinDisplay';
 import StoryForm from './StoryForm';
 import StoryAssign from './StoryAssign';
+import TaskSection from '../tasks/TaskSection';
 import storyService from '../../services/storyService';
 
 /**
@@ -67,7 +68,7 @@ const StoryDetail = ({ story, onStatusChange, onClose, onError, onUpdate, onDele
   };
   
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden max-h-screen flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center bg-gray-50 p-4 border-b border-gray-200">
         <h2 className="text-xl font-semibold text-gray-800">{currentStory.title}</h2>
@@ -90,10 +91,10 @@ const StoryDetail = ({ story, onStatusChange, onClose, onError, onUpdate, onDele
       </div>
       
       {/* Content */}
-      <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="p-6 overflow-y-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Left column - Story details */}
-          <div className="md:col-span-2">
+          <div className="md:col-span-3">
             {isEditing ? (
               <div className="mb-6">
                 <h3 className="text-lg font-medium mb-2">Edit Story</h3>
@@ -121,6 +122,9 @@ const StoryDetail = ({ story, onStatusChange, onClose, onError, onUpdate, onDele
             
             {/* Gherkin Display */}
             {!isEditing && <GherkinDisplay gherkin={currentStory.gherkin_description} />}
+            
+            {/* Tasks Section */}
+            {!isEditing && <TaskSection storyId={currentStory.id} onError={onError} />}
             
             {/* Metadata */}
             <div className="bg-white rounded-lg shadow-sm p-4">
@@ -174,12 +178,7 @@ const StoryDetail = ({ story, onStatusChange, onClose, onError, onUpdate, onDele
                   </button>
                 )}
                 
-                <button
-                  className="w-full text-left px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  onClick={() => console.log('Add Task - Not implemented')}
-                >
-                  Add Task
-                </button>
+                {/* Task button removed as it's now managed by the TaskSection */}
                 
                 <button
                   className="w-full text-left px-4 py-2 border border-gray-300 rounded-md text-sm text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
@@ -196,8 +195,8 @@ const StoryDetail = ({ story, onStatusChange, onClose, onError, onUpdate, onDele
       
       {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full my-8 mx-auto">
             <h3 className="text-lg font-medium mb-3 text-red-600">Confirm Delete</h3>
             <p className="mb-4">Are you sure you want to delete this story? This action cannot be undone.</p>
             <div className="flex justify-end space-x-3">
