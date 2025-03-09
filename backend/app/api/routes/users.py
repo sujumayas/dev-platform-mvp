@@ -4,9 +4,18 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.api.deps import get_current_user
 from app.schemas.user import User, UserCreate, UserUpdate
-from app.crud.user import get_user_by_email, create_user, update_user
+from app.crud.user import get_user_by_email, create_user, update_user, get_users
 
 router = APIRouter()
+
+
+@router.get("/", response_model=list[User])
+async def get_users_route(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    users = get_users(db)
+    return users
 
 
 @router.get("/profile", response_model=User)

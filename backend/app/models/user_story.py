@@ -15,6 +15,16 @@ class StoryStatus(enum.Enum):
     DEVELOPMENT = "DEVELOPMENT"
     READY_FOR_TESTING = "READY_FOR_TESTING"
     READY_FOR_PRODUCTION = "READY_FOR_PRODUCTION"
+    
+    def __eq__(self, other):
+        if not isinstance(other, enum.Enum):
+            return NotImplemented
+        # Compare by name and value for inter-module compatibility
+        return self.name == other.name and self.value == other.value
+        
+    def __hash__(self):
+        # Update hash to be compatible with the new equality method
+        return hash((self.name, self.value))
 
 
 class UserStory(Base):
@@ -34,6 +44,11 @@ class UserStory(Base):
         ForeignKey("users.id"), 
         nullable=False
     )
+    assigned_to = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=True
+    )
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(
         DateTime, 
@@ -43,4 +58,5 @@ class UserStory(Base):
     
     # Relationships
     creator = relationship("User", foreign_keys=[created_by])
+    assignee = relationship("User", foreign_keys=[assigned_to])
     tasks = relationship("Task", back_populates="user_story", cascade="all, delete-orphan")

@@ -50,6 +50,68 @@ const storyService = {
       console.error('Error updating story status:', error);
       throw error;
     }
+  },
+  
+  /**
+   * Update story details (title, description, etc.)
+   * @param {string} storyId - ID of the story to update
+   * @param {Object} storyData - Data to update (title, description, etc.)
+   * @returns {Promise} - Promise resolving to updated story
+   */
+  updateStory: async (storyId, storyData) => {
+    try {
+      const response = await api.put(`/stories/${storyId}`, storyData);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating story:', error);
+      throw error;
+    }
+  },
+  
+  /**
+   * Assign a story to a user
+   * @param {string} storyId - ID of the story to assign
+   * @param {string} userId - ID of the user to assign to
+   * @returns {Promise} - Promise resolving to updated story
+   */
+  assignStory: async (storyId, userId) => {
+    try {
+      const response = await api.put(`/stories/${storyId}/assign`, { assigned_to: userId });
+      return response.data;
+    } catch (error) {
+      console.error('Error assigning story:', error);
+      throw error;
+    }
+  },
+  
+  /**
+   * Delete a story
+   * @param {string} storyId - ID of the story to delete
+   * @returns {Promise} - Promise resolving when story is deleted
+   */
+  deleteStory: async (storyId) => {
+    try {
+      await api.delete(`/stories/${storyId}`);
+      return true;
+    } catch (error) {
+      console.error('Error deleting story:', error);
+      throw error;
+    }
+  },
+  
+  /**
+   * Get a single story by ID
+   * @param {string} storyId - ID of the story to retrieve
+   * @returns {Promise} - Promise resolving to the story
+   */
+  getStoryById: async (storyId) => {
+    try {
+      const response = await api.get(`/stories/${storyId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching story:', error);
+      throw error;
+    }
   }
 };
 

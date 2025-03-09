@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from sqlalchemy.orm import Session
 from uuid import UUID
 
@@ -13,6 +13,10 @@ def get_user_by_email(db: Session, email: str) -> Optional[User]:
 
 def get_user_by_id(db: Session, user_id: UUID) -> Optional[User]:
     return db.query(User).filter(User.id == user_id).first()
+
+
+def get_users(db: Session) -> List[User]:
+    return db.query(User).all()
 
 
 def create_user(db: Session, user_in: UserCreate) -> User:

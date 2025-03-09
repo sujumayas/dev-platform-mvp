@@ -1,0 +1,109 @@
+.
+├── backend
+│   ├── README.md
+│   ├── alembic.ini
+│   ├── app
+│   │   ├── __init__.py
+│   │   ├── api
+│   │   │   ├── deps.py
+│   │   │   └── routes
+│   │   │       ├── auth.py
+│   │   │       ├── documents.py
+│   │   │       ├── stories.py
+│   │   │       ├── tasks.py
+│   │   │       └── users.py
+│   │   ├── core
+│   │   │   ├── config.py
+│   │   │   └── security.py
+│   │   ├── crud
+│   │   │   ├── __init__.py
+│   │   │   ├── document.py
+│   │   │   ├── task.py
+│   │   │   ├── user.py
+│   │   │   └── user_story.py
+│   │   ├── db
+│   │   │   ├── __init__.py
+│   │   │   ├── base.py
+│   │   │   ├── base_class.py
+│   │   │   └── session.py
+│   │   ├── initial_data.py
+│   │   ├── models
+│   │   │   ├── document.py
+│   │   │   ├── task.py
+│   │   │   ├── user.py
+│   │   │   └── user_story.py
+│   │   ├── schemas
+│   │   │   ├── __init__.py
+│   │   │   ├── document.py
+│   │   │   ├── task.py
+│   │   │   ├── token.py
+│   │   │   ├── user.py
+│   │   │   └── user_story.py
+│   │   └── services
+│   │       ├── __init__.py
+│   │       └── claude_service.py
+│   ├── main.py
+│   ├── migrations
+│   │   ├── __init__.py
+│   │   ├── env.py
+│   │   ├── script.py.mako
+│   │   └── versions
+│   │       ├── add_assigned_to_user_stories.py.bak
+│   │       ├── add_assigned_to_user_stories_fixed.py.bak
+│   │       ├── add_assignee.py
+│   │       └── initial_migration.py
+│   ├── requirements.txt
+│   ├── run.py
+│   └── test_story_api.py
+├── folder_structure.txt
+├── frontend
+│   ├── .gitignore
+│   ├── README.md
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── public
+│   │   ├── index.html
+│   │   └── manifest.json
+│   ├── src
+│   │   ├── App.js
+│   │   ├── components
+│   │   │   ├── Layout.js
+│   │   │   ├── Loading.js
+│   │   │   ├── Notification.js
+│   │   │   ├── Pagination.js
+│   │   │   ├── ProtectedRoute.js
+│   │   │   ├── UserMenu.js
+│   │   │   └── stories
+│   │   │       ├── GherkinDisplay.js
+│   │   │       ├── SearchBox.js
+│   │   │       ├── StatusFilter.js
+│   │   │       ├── StatusTransition.js
+│   │   │       ├── StoryAssign.js
+│   │   │       ├── StoryDetail.js
+│   │   │       └── StoryForm.js
+│   │   ├── context
+│   │   │   └── AuthContext.js
+│   │   ├── index.css
+│   │   ├── index.js
+│   │   ├── pages
+│   │   │   ├── Home.js
+│   │   │   ├── Login.js
+│   │   │   └── Stories.js
+│   │   ├── reportWebVitals.js
+│   │   ├── services
+│   │   │   ├── api.js
+│   │   │   ├── authService.js
+│   │   │   ├── storyService.js
+│   │   │   └── userService.js
+│   │   └── utils
+│   │       ├── errorHandler.js
+│   │       └── statusConfig.js
+│   ├── start.sh
+│   └── tailwind.config.js
+└── temp_logs
+
+23 directories, 81 files
+
+Total number of lines in all files:
+13970962

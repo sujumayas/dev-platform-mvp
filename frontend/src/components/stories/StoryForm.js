@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 /**
  * Form component for creating or editing user stories
  */
-const StoryForm = ({ onSubmit, initialData = {}, isSubmitting = false }) => {
+const StoryForm = ({ onSubmit, initialData = {}, isSubmitting = false, isEditing = false }) => {
   // Form state
   const [formData, setFormData] = useState({
     title: initialData.title || '',
@@ -115,7 +115,7 @@ const StoryForm = ({ onSubmit, initialData = {}, isSubmitting = false }) => {
               Saving...
             </>
           ) : (
-            'Create User Story'
+            isEditing ? 'Update User Story' : 'Create User Story'
           )}
         </button>
       </div>
@@ -127,6 +127,7 @@ StoryForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   initialData: PropTypes.object,
   isSubmitting: PropTypes.bool,
+  isEditing: PropTypes.bool,
 };
 
 export default StoryForm;

@@ -11,12 +11,23 @@ class StoryStatus(str, Enum):
     DEVELOPMENT = "DEVELOPMENT"
     READY_FOR_TESTING = "READY_FOR_TESTING"
     READY_FOR_PRODUCTION = "READY_FOR_PRODUCTION"
+    
+    def __eq__(self, other):
+        if not isinstance(other, Enum):
+            return NotImplemented
+        # Compare by name and value for inter-module compatibility
+        return self.name == other.name and self.value == other.value
+        
+    def __hash__(self):
+        # Update hash to be compatible with the new equality method
+        return hash((self.name, self.value))
 
 
 # Shared properties
 class UserStoryBase(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
+    assigned_to: Optional[UUID4] = None
 
 
 # Properties to receive via API on creation
@@ -28,6 +39,11 @@ class UserStoryCreate(UserStoryBase):
 # Properties to receive via API on update
 class UserStoryUpdate(UserStoryBase):
     pass
+
+
+# Properties for assigning stories
+class UserStoryAssign(BaseModel):
+    assigned_to: UUID4
 
 
 # Properties for status update
@@ -43,6 +59,7 @@ class UserStoryInDBBase(UserStoryBase):
     status: StoryStatus
     gherkin_description: Optional[str] = None
     created_by: UUID4
+    assigned_to: Optional[UUID4] = None
     created_at: datetime
     updated_at: datetime
 

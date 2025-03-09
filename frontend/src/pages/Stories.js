@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
 import StoryForm from '../components/stories/StoryForm';
+import StoryDetail from '../components/stories/StoryDetail';
 import Loading from '../components/Loading';
 import Notification from '../components/Notification';
 import StatusFilter from '../components/stories/StatusFilter';
@@ -21,6 +22,7 @@ const Stories = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [selectedStory, setSelectedStory] = useState(null);
   
   // Pagination state
   const [page, setPage] = useState(1);
@@ -114,6 +116,62 @@ const Stories = () => {
   // Handle status filter change
   const handleStatusChange = (status) => {
     setStatusFilter(status);
+  };
+  
+  // Handle selecting a story for detailed view
+  const handleStorySelect = (story) => {
+    setSelectedStory(story);
+  };
+  
+  // Handle closing detailed view
+  const handleCloseDetail = () => {
+    setSelectedStory(null);
+  };
+  
+  // Handle story status update
+  const handleStoryStatusUpdate = (updatedStory) => {
+    // Update the story in the stories array
+    const updatedStories = stories.map(story => 
+      story.id === updatedStory.id ? updatedStory : story
+    );
+    
+    setStories(updatedStories);
+    setSelectedStory(updatedStory);
+    
+    setNotification({
+      type: 'success',
+      message: `Story status updated to "${getStatusLabel(updatedStory.status)}"`
+    });
+  };
+
+  // Handle story update (edit)
+  const handleStoryUpdate = (updatedStory) => {
+    // Update the story in the stories array
+    const updatedStories = stories.map(story => 
+      story.id === updatedStory.id ? updatedStory : story
+    );
+    
+    setStories(updatedStories);
+    setSelectedStory(updatedStory);
+    
+    setNotification({
+      type: 'success',
+      message: 'Story updated successfully'
+    });
+  };
+  
+  // Handle story deletion
+  const handleStoryDelete = (storyId) => {
+    // Remove the story from the stories array
+    const updatedStories = stories.filter(story => story.id !== storyId);
+    
+    setStories(updatedStories);
+    setSelectedStory(null);
+    
+    setNotification({
+      type: 'success',
+      message: 'Story deleted successfully'
+    });
   };
   
   // Handle page change
@@ -239,27 +297,40 @@ const Stories = () => {
             <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
               <div className="grid grid-cols-12 gap-4 bg-gray-100 p-4 font-medium text-gray-700 border-b border-gray-200 sticky top-0">
                 <div className="col-span-3">Title</div>
-                <div className="col-span-5">Description</div>
+                <div className="col-span-4">Description</div>
                 <div className="col-span-2">Status</div>
-                <div className="col-span-2">Created</div>
+                <div className="col-span-2">Assigned to</div>
+                <div className="col-span-1">Created</div>
               </div>
               <div className="divide-y divide-gray-200">
                 {displayedStories.map((story, index) => (
                   <div 
                     key={story.id} 
                     className={`grid grid-cols-12 gap-4 p-4 hover:bg-blue-50 transition-colors duration-150 cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
-                    onClick={() => console.log('Story clicked:', story.id)}
+                    onClick={() => handleStorySelect(story)}
                   >
                     <div className="col-span-3 font-medium text-blue-600">{story.title}</div>
-                    <div className="col-span-5">{story.description.substring(0, 100)}...</div>
+                    <div className="col-span-4">{story.description.substring(0, 100)}...</div>
                     <div className="col-span-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(story.status)}`}>
-                        {getStatusLabel(story.status)}
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(story.status)}`}>
+                    {getStatusLabel(story.status)}
+                    </span>
+                    </div>
+                    <div className="col-span-2">
+                    {story.assigned_to ? (
+                      <span className="text-sm">
+                        <span className="inline-block w-6 h-6 mr-1 bg-blue-100 text-blue-800 rounded-full text-xs text-center leading-6">
+                          {story.assigned_to.toString().substring(0, 1).toUpperCase()}
+                        </span>
+                        ID: {story.assigned_to.toString().substring(0, 6)}...
                       </span>
-                    </div>
-                    <div className="col-span-2 text-sm text-gray-500">
-                      {new Date(story.created_at).toLocaleDateString()}
-                    </div>
+                    ) : (
+                      <span className="text-sm text-gray-500 italic">Unassigned</span>
+                    )}
+                  </div>
+                  <div className="col-span-1 text-sm text-gray-500">
+                    {new Date(story.created_at).toLocaleDateString()}
+                  </div>
                   </div>
                 ))}
               </div>
@@ -301,6 +372,22 @@ const Stories = () => {
           </div>
         )}
       </div>
+      
+      {/* Story Detail Modal */}
+      {selectedStory && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+          <div className="relative mx-auto w-full max-w-6xl p-4">
+            <StoryDetail
+              story={selectedStory}
+              onClose={handleCloseDetail}
+              onStatusChange={handleStoryStatusUpdate}
+              onUpdate={handleStoryUpdate}
+              onDelete={handleStoryDelete}
+              onError={(message) => setNotification({ type: 'error', message })}
+            />
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };
