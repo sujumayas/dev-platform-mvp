@@ -1,5 +1,7 @@
 .
+├── .gitignore
 ├── backend
+│   ├── .env
 │   ├── README.md
 │   ├── alembic.ini
 │   ├── app
@@ -8,6 +10,7 @@
 │   │   │   ├── deps.py
 │   │   │   └── routes
 │   │   │       ├── auth.py
+│   │   │       ├── dashboard.py
 │   │   │       ├── documents.py
 │   │   │       ├── stories.py
 │   │   │       ├── tasks.py
@@ -51,6 +54,7 @@
 │   │       ├── add_assigned_to_user_stories.py.bak
 │   │       ├── add_assigned_to_user_stories_fixed.py.bak
 │   │       ├── add_assignee.py
+│   │       ├── add_design_url_to_user_stories.py
 │   │       └── initial_migration.py
 │   ├── requirements.txt
 │   ├── run.py
@@ -74,36 +78,53 @@
 │   │   │   ├── Pagination.js
 │   │   │   ├── ProtectedRoute.js
 │   │   │   ├── UserMenu.js
-│   │   │   └── stories
-│   │   │       ├── GherkinDisplay.js
-│   │   │       ├── SearchBox.js
-│   │   │       ├── StatusFilter.js
-│   │   │       ├── StatusTransition.js
-│   │   │       ├── StoryAssign.js
-│   │   │       ├── StoryDetail.js
-│   │   │       └── StoryForm.js
+│   │   │   ├── stories
+│   │   │   │   ├── DesignUpload.js
+│   │   │   │   ├── GherkinDisplay.js
+│   │   │   │   ├── SearchBox.js
+│   │   │   │   ├── StatusFilter.js
+│   │   │   │   ├── StatusTransition.js
+│   │   │   │   ├── StoryAssign.js
+│   │   │   │   ├── StoryDetail.js
+│   │   │   │   └── StoryForm.js
+│   │   │   └── tasks
+│   │   │       ├── TaskAssign.js
+│   │   │       ├── TaskAssigneeBadge.js
+│   │   │       ├── TaskFilter.js
+│   │   │       ├── TaskFilterInfo.js
+│   │   │       ├── TaskForm.js
+│   │   │       ├── TaskSection.js
+│   │   │       ├── TaskStatusBadge.js
+│   │   │       ├── TaskStatusSelector.js
+│   │   │       └── TaskTable.js
 │   │   ├── context
 │   │   │   └── AuthContext.js
 │   │   ├── index.css
 │   │   ├── index.js
 │   │   ├── pages
+│   │   │   ├── Dashboard.js
 │   │   │   ├── Home.js
 │   │   │   ├── Login.js
-│   │   │   └── Stories.js
+│   │   │   ├── Stories.js
+│   │   │   └── TestDesignFeature.js
 │   │   ├── reportWebVitals.js
 │   │   ├── services
 │   │   │   ├── api.js
 │   │   │   ├── authService.js
+│   │   │   ├── dashboardService.js
 │   │   │   ├── storyService.js
+│   │   │   ├── taskService.js
 │   │   │   └── userService.js
 │   │   └── utils
+│   │       ├── constants.js
 │   │       ├── errorHandler.js
-│   │       └── statusConfig.js
+│   │       ├── statusConfig.js
+│   │       └── taskStatusConfig.js
 │   ├── start.sh
 │   └── tailwind.config.js
 └── temp_logs
 
-23 directories, 81 files
+24 directories, 101 files
 
 Total number of lines in all files:
-13970962
+14231034

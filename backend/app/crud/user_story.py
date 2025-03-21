@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from uuid import UUID
@@ -7,7 +7,7 @@ import os
 from app.services.claude_service import ClaudeService
 
 from app.models.user_story import UserStory, StoryStatus
-from app.schemas.user_story import UserStoryCreate, UserStoryUpdate
+from app.schemas.user_story import UserStoryCreate, UserStoryUpdate, UserStoryDesignUpload
 from app.crud.user import get_user_by_email
 
 
@@ -35,16 +35,24 @@ def create_story(
     # Set assigned_to to the creator if not specified
     assigned_to = story_in.assigned_to if story_in.assigned_to else created_by
     
-    db_story = UserStory(
-        title=story_in.title,
-        description=story_in.description,
-        status=StoryStatus.DRAFT,
-        created_by=created_by,
-        assigned_to=assigned_to,
-    )
+    # Create story object with all fields from story_in
+    print(f"Creating story with data: {story_in.model_dump()}")
+    
+    # Extract all fields from the story_in model
+    story_data = story_in.model_dump()
+    
+    # Add the standard fields
+    story_data["status"] = StoryStatus.DRAFT
+    story_data["created_by"] = created_by
+    story_data["assigned_to"] = assigned_to
+    
+    # Create the UserStory instance
+    db_story = UserStory(**story_data)
+    
     db.add(db_story)
     db.commit()
     db.refresh(db_story)
+    print(f"Created story with ID: {db_story.id}, design_url: {db_story.design_url}")
     return db_story
 
 
@@ -206,6 +214,81 @@ async def update_story_status(
     print(f"============================================\n\n")
     
     return db_story
+
+
+def update_story_design(db: Session, story_id: UUID, design_data: UserStoryDesignUpload) -> Optional[UserStory]:
+    """
+    Update a story with a design image URL
+    
+    Args:
+        db: Database session
+        story_id: ID of the story to update
+        design_data: Data containing the design image URL
+        
+    Returns:
+        Updated user story or None if not found
+    """
+    db_story = get_story(db, story_id)
+    if not db_story:
+        return None
+        
+    # Update the design URL
+    print(f"Updating story {story_id} design_url to: {design_data.design_url}")
+    db_story.design_url = design_data.design_url
+    
+    db.add(db_story)
+    db.commit()
+    db.refresh(db_story)
+    print(f"Story updated, new design_url: {db_story.design_url}")
+    return db_story
+
+
+async def generate_description_from_design(db: Session, story_id: UUID) -> Tuple[Optional[UserStory], Optional[str]]:
+    """
+    Generate a description for a user story based on its design image
+    
+    Args:
+        db: Database session
+        story_id: ID of the story with the design
+        
+    Returns:
+        Tuple containing (updated_story, generated_description) or (None, None) if failed
+    """
+    db_story = get_story(db, story_id)
+    if not db_story or not db_story.design_url:
+        return None, None
+    
+    print(f"\n\n========= GENERATING DESCRIPTION FROM DESIGN ==========")
+    print(f"Story ID: {story_id}")
+    print(f"Design URL: {db_story.design_url}")
+    
+    # Create Claude service
+    claude_service = ClaudeService()
+    
+    try:
+        # Call Claude API to analyze the image
+        generated_description = await claude_service.analyze_design_image(db_story.design_url)
+        
+        if generated_description:
+            print(f"Successfully generated description")
+            print(f"Description length: {len(generated_description)} chars")
+            print(f"First 100 chars: {generated_description[:100]}")
+            return db_story, generated_description
+        else:
+            # This shouldn't happen now since we're always returning a fallback
+            print(f"No description was generated, using fallback")
+            fallback_description = claude_service.fallback_design_analysis()
+            return db_story, fallback_description
+            
+    except Exception as e:
+        print(f"ERROR: Failed to generate description from design: {str(e)}")
+        # Return fallback in case of any exception
+        fallback_description = claude_service.fallback_design_analysis()
+        print(f"Generated fallback description: {fallback_description[:100]}...")
+        return db_story, fallback_description
+        
+    finally:
+        print(f"============================================\n\n")
 
 
 def convert_to_gherkin(title: str, description: str) -> str:

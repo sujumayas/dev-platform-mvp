@@ -1,9 +1,18 @@
 import uvicorn
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, users, stories, tasks, documents
+from app.api.routes import auth, users, stories, tasks, documents, dashboard
 from app.core.config import settings
+
+# Check for Claude API key at startup
+if settings.CLAUDE_API_KEY:
+    key_length = len(settings.CLAUDE_API_KEY)
+    print(f"\n>>> CLAUDE_API_KEY found! (length: {key_length})")
+else:
+    print("\n>>> WARNING: CLAUDE_API_KEY not set! Design analysis will use fallback mode.")
+    print(">>>          Set the CLAUDE_API_KEY in the .env file to use the actual Claude API.")
 
 app = FastAPI(
     title="Developer Platform MVP",
@@ -26,6 +35,7 @@ app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(stories.router, prefix="/stories", tags=["User Stories"])
 app.include_router(tasks.router, prefix="/tasks", tags=["Tasks"])
 app.include_router(documents.router, prefix="/documents", tags=["Documents"])
+app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 
 if __name__ == "__main__":
     uvicorn.run(

@@ -7,6 +7,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Stories from './pages/Stories';
+import Dashboard from './pages/Dashboard';
+import TestDesignFeature from './pages/TestDesignFeature';
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
             <Route path="/stories" element={<Stories />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/test-design" element={<TestDesignFeature />} />
             {/* Add more protected routes here */}
           </Route>
           

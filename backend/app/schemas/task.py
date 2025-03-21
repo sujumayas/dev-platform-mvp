@@ -75,7 +75,7 @@ class TaskInDBBase(TaskBase):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Additional properties to return via API

@@ -12,8 +12,10 @@ const Layout = ({ children }) => {
 
   // Navigation items
   const navItems = [
-    { path: '/', label: 'Dashboard' },
+    { path: '/', label: 'Home' },
+    { path: '/dashboard', label: 'Dashboard' },
     { path: '/stories', label: 'User Stories' },
+    { path: '/test-design', label: 'Test Design Feature' },
     // Add more navigation items as features are developed
   ];
 

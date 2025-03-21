@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import DesignUpload from './DesignUpload';
+import storyService from '../../services/storyService';
 
 /**
  * Form component for creating or editing user stories
@@ -9,7 +11,11 @@ const StoryForm = ({ onSubmit, initialData = {}, isSubmitting = false, isEditing
   const [formData, setFormData] = useState({
     title: initialData.title || '',
     description: initialData.description || '',
+    design_url: initialData.design_url || ''
   });
+
+  // State for handling design analysis
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Validation state
   const [errors, setErrors] = useState({});
@@ -47,6 +53,80 @@ const StoryForm = ({ onSubmit, initialData = {}, isSubmitting = false, isEditing
     
     if (validateForm()) {
       onSubmit(formData);
+    }
+  };
+
+  // Handle design URL update
+  const handleDesignUpload = (designUrl) => {
+    setFormData({ ...formData, design_url: designUrl });
+  };
+
+  // Handle description generation from design
+  const handleAnalyzeDesign = async () => {
+    if (!formData.design_url) return;
+    
+    try {
+      setIsAnalyzing(true);
+      
+      // First, we need to save the design URL to the story if it's a new design URL
+      const storyId = initialData.id;
+      
+      if (storyId) {
+        // If the design URL has changed, update it first
+        if (initialData.design_url !== formData.design_url) {
+          console.log('Updating design URL before analysis:', formData.design_url);
+          await storyService.updateStoryDesign(storyId, formData.design_url);
+        }
+        
+        console.log('Calling API to analyze design for story ID:', storyId);
+        // Now analyze the design
+        const response = await storyService.analyzeDesign(storyId);
+        console.log('Received analysis response:', response);
+        
+        if (response && response.generated_description) {
+          console.log('Setting description from API response');
+          setFormData({ ...formData, description: response.generated_description });
+        } else {
+          console.warn('No generated description in response');
+        }
+      } else {
+        // For new stories (no storyId yet), we'll create a temporary story, 
+        // add the design, analyze it, then delete it
+        console.log('Creating temporary story for design analysis');
+        
+        try {
+          // Create a temporary story
+          const tempStory = await storyService.createStory({
+            title: 'Temporary Design Analysis Story',
+            description: 'This is a temporary story for design analysis.',
+            design_url: formData.design_url
+          });
+          
+          console.log('Temporary story created:', tempStory);
+          
+          // Analyze the design
+          const response = await storyService.analyzeDesign(tempStory.id);
+          console.log('Analysis response:', response);
+          
+          if (response && response.generated_description) {
+            setFormData({ ...formData, description: response.generated_description });
+          }
+          
+          // Delete the temporary story
+          await storyService.deleteStory(tempStory.id);
+          console.log('Temporary story deleted');
+        } catch (error) {
+          console.error('Error with temporary story workflow:', error);
+          // Fallback to a generic description
+          const fallbackDescription = `Interface for a web application with navigation and interactive elements. Users can perform actions and view content through this interface.`;
+          setFormData({ ...formData, description: fallbackDescription });
+        }
+      }
+    } catch (error) {
+      console.error('Error analyzing design:', error);
+      alert('Failed to analyze design. Please check console for details.');
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -98,6 +178,14 @@ const StoryForm = ({ onSubmit, initialData = {}, isSubmitting = false, isEditing
           <p className="mt-1 text-sm text-red-600">{errors.description}</p>
         )}
       </div>
+      
+      {/* Design Upload Component */}
+      <DesignUpload 
+        designUrl={formData.design_url} 
+        onUpload={handleDesignUpload} 
+        onAnalyze={handleAnalyzeDesign}
+        isAnalyzing={isAnalyzing}
+      />
       
       {/* Submit button */}
       <div className="pt-2">

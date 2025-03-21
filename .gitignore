@@ -1,0 +1,83 @@
+# Root level
+temp_logs/
+.DS_Store
+*.log
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Python backend
+backend/.env
+backend/__pycache__/
+backend/*.py[cod]
+backend/*$py.class
+backend/*.so
+backend/.Python
+backend/env/
+backend/venv/
+backend/.venv/
+backend/ENV/
+backend/env.bak/
+backend/venv.bak/
+backend/.env.local
+backend/.env.development.local
+backend/.env.test.local
+backend/.env.production.local
+backend/pip-log.txt
+backend/pip-delete-this-directory.txt
+backend/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+backend/.tox/
+backend/.nox/
+backend/.hypothesis/
+backend/.egg-info/
+backend/dist/
+backend/build/
+backend/eggs/
+backend/parts/
+backend/sdist/
+backend/var/
+backend/wheels/
+backend/*.egg-info/
+backend/.installed.cfg
+backend/*.egg
+
+# Python app directory
+backend/app/**/__pycache__/
+backend/app/**/**/__pycache__/
+
+# Python migrations (keep structure but ignore backups)
+backend/migrations/versions/*.bak
+
+# Frontend (if not using the frontend/.gitignore)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnpm-debug.log*
+frontend/coverage/
+frontend/.vercel
+frontend/build/
+frontend/dist/
+frontend/.turbo
+frontend/.cache/
+
+# Local Netlify folder
+.netlify/
+
+# Alembic SQLite database
+backend/*.db
+
+# Backup files
+*.bak
+*~
+*.orig

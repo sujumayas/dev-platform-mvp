@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     SECRET_KEY: str = secrets.token_urlsafe(32)
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 1 day
     
+    # External API settings
+    CLAUDE_API_KEY: Optional[str] = None
+    
     # Database settings
     POSTGRES_USER: str = os.environ.get("POSTGRES_USER", "esennahelespinosa")  # Your username
     POSTGRES_PASSWORD: str = os.environ.get("POSTGRES_PASSWORD", "")

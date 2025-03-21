@@ -34,6 +34,7 @@ class UserStory(Base):
     title = Column(String, nullable=False)
     description = Column(Text, nullable=False)
     gherkin_description = Column(Text, nullable=True)
+    design_url = Column(String, nullable=True)  # URL to the design image
     status = Column(
         Enum(StoryStatus), 
         default=StoryStatus.DRAFT, 

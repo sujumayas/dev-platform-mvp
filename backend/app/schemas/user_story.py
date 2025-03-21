@@ -28,6 +28,7 @@ class UserStoryBase(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     assigned_to: Optional[UUID4] = None
+    design_url: Optional[str] = None
 
 
 # Properties to receive via API on creation
@@ -49,6 +50,14 @@ class UserStoryAssign(BaseModel):
 # Properties for status update
 class UserStoryStatusUpdate(BaseModel):
     status: StoryStatus
+    
+# Properties for design upload
+class UserStoryDesignUpload(BaseModel):
+    design_url: str
+    
+# Response for generated description from design
+class UserStoryDesignAnalysis(BaseModel):
+    generated_description: str
 
 
 # Properties shared by models stored in DB
@@ -58,13 +67,14 @@ class UserStoryInDBBase(UserStoryBase):
     description: str
     status: StoryStatus
     gherkin_description: Optional[str] = None
+    design_url: Optional[str] = None
     created_by: UUID4
     assigned_to: Optional[UUID4] = None
     created_at: datetime
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Additional properties to return via API

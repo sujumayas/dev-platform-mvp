@@ -4,6 +4,7 @@ import StatusTransition from './StatusTransition';
 import GherkinDisplay from './GherkinDisplay';
 import StoryForm from './StoryForm';
 import StoryAssign from './StoryAssign';
+import DesignUpload from './DesignUpload';
 import TaskSection from '../tasks/TaskSection';
 import storyService from '../../services/storyService';
 
@@ -13,6 +14,7 @@ import storyService from '../../services/storyService';
 const StoryDetail = ({ story, onStatusChange, onClose, onError, onUpdate, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [currentStory, setCurrentStory] = useState(story);
   
@@ -64,6 +66,64 @@ const StoryDetail = ({ story, onStatusChange, onClose, onError, onUpdate, onDele
     } finally {
       setIsSubmitting(false);
       setShowDeleteConfirm(false);
+    }
+  };
+  
+  // Handle design URL update
+  const handleDesignUpload = async (designUrl) => {
+    try {
+      setIsSubmitting(true);
+      const updatedStory = await storyService.updateStoryDesign(currentStory.id, designUrl);
+      setCurrentStory(updatedStory);
+      if (onUpdate) {
+        onUpdate(updatedStory);
+      }
+    } catch (error) {
+      onError("Failed to update design URL. Please try again.");
+      console.error("Update design error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  // Handle design analysis
+  const handleAnalyzeDesign = async () => {
+    if (!currentStory.design_url) {
+      onError("No design URL available. Please add a design first.");
+      return;
+    }
+    
+    try {
+      setIsAnalyzing(true);
+      console.log('Analyzing design for story ID:', currentStory.id);
+      console.log('Design URL:', currentStory.design_url);
+      
+      const response = await storyService.analyzeDesign(currentStory.id);
+      console.log('Analysis response received:', response);
+      
+      // Update the story with the generated description
+      if (response && response.generated_description) {
+        console.log('Updating story with generated description');
+        const updatedStory = await storyService.updateStory(currentStory.id, {
+          description: response.generated_description
+        });
+        
+        setCurrentStory(updatedStory);
+        if (onUpdate) {
+          onUpdate(updatedStory);
+        }
+        
+        // Show success notification
+        onError("Description successfully generated from design!");
+      } else {
+        console.warn('No generated description in response');
+        onError("No description was generated. The API may be experiencing issues.");
+      }
+    } catch (error) {
+      onError("Failed to analyze design. Please try again.");
+      console.error("Design analysis error:", error);
+    } finally {
+      setIsAnalyzing(false);
     }
   };
   
@@ -123,6 +183,16 @@ const StoryDetail = ({ story, onStatusChange, onClose, onError, onUpdate, onDele
             {/* Gherkin Display */}
             {!isEditing && <GherkinDisplay gherkin={currentStory.gherkin_description} />}
             
+            {/* Design Display */}
+            {!isEditing && (
+              <DesignUpload 
+                designUrl={currentStory.design_url} 
+                onUpload={handleDesignUpload} 
+                onAnalyze={handleAnalyzeDesign}
+                isAnalyzing={isAnalyzing}
+              />
+            )}
+            
             {/* Tasks Section */}
             {!isEditing && <TaskSection storyId={currentStory.id} onError={onError} />}
             
@@ -177,8 +247,6 @@ const StoryDetail = ({ story, onStatusChange, onClose, onError, onUpdate, onDele
                     Edit Story
                   </button>
                 )}
-                
-                {/* Task button removed as it's now managed by the TaskSection */}
                 
                 <button
                   className="w-full text-left px-4 py-2 border border-gray-300 rounded-md text-sm text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"

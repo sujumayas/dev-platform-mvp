@@ -112,6 +112,41 @@ const storyService = {
       console.error('Error fetching story:', error);
       throw error;
     }
+  },
+
+  /**
+   * Update a story with a design image URL
+   * @param {string} storyId - ID of the story to update
+   * @param {string} designUrl - URL of the design image
+   * @returns {Promise} - Promise resolving to updated story
+   */
+  updateStoryDesign: async (storyId, designUrl) => {
+    try {
+      console.log(`Updating story ${storyId} with design URL:`, designUrl);
+      const response = await api.put(`/stories/${storyId}/design`, { design_url: designUrl });
+      console.log('Story design updated successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating story design:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Generate a description from a story's design image using Claude
+   * @param {string} storyId - ID of the story with the design to analyze
+   * @returns {Promise} - Promise resolving to the generated description
+   */
+  analyzeDesign: async (storyId) => {
+    try {
+      console.log(`Analyzing design for story ID: ${storyId}`);
+      const response = await api.post(`/stories/${storyId}/analyze-design`);
+      console.log('Design analysis response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error analyzing design:', error);
+      throw error;
+    }
   }
 };
 
